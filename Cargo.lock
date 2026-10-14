@@ -4709,6 +4709,7 @@ dependencies = [
  "photocraft-engine",
  "photocraft-format",
  "photocraft-io",
+ "photocraft-storage",
  "serde_json",
  "tokio",
  "winresource",
@@ -4960,6 +4961,16 @@ dependencies = [
  "zune-core 0.5.3",
  "zune-jpeg 0.5.15",
  "zune-jpegxl",
+]
+
+[[package]]
+name = "photocraft-storage"
+version = "0.8.2"
+dependencies = [
+ "base64 0.22.1",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
