@@ -1,4 +1,4 @@
-//! Pluggable save targets (issue #518, Phase 0-1).
+//! Pluggable save targets (storytold/wordcraft#518, Phase 0-1).
 //!
 //! [`StorageBackend`] abstracts where document bytes live: a local or NAS folder today, an
 //! rclone transport or native S3 later. Every action on a backend goes through this trait, so

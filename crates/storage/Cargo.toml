@@ -3,7 +3,7 @@ name = "photocraft-storage"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "PhotoCraft storage backends (issue #518, Phase 0-1): a StorageBackend trait with capability probing, atomic writes and a recovery-journal hook; local-filesystem and WebDAV (oCIS-compatible) backends"
+description = "PhotoCraft storage backends (storytold/wordcraft#518, Phase 0-1): a StorageBackend trait with capability probing, atomic writes and a recovery-journal hook; local-filesystem and WebDAV (oCIS-compatible) backends"
 
 [lints]
 workspace = true
