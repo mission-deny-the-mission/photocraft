@@ -66,11 +66,7 @@ impl LocalBackend {
 
     fn meta_of(&self, rel: &str, dest: &Path) -> Result<FileMeta, StorageError> {
         let meta = fs::metadata(dest).map_err(|e| {
-            if e.kind() == std::io::ErrorKind::NotFound {
-                StorageError::NotFound(rel.into())
-            } else {
-                StorageError::Io(format!("{}: {e}", dest.display()))
-            }
+            if e.kind() == std::io::ErrorKind::NotFound { StorageError::NotFound(rel.into()) } else { StorageError::Io(format!("{}: {e}", dest.display())) }
         })?;
         if !meta.is_file() {
             return Err(StorageError::NotFound(rel.into()));
@@ -160,11 +156,7 @@ impl StorageBackend for LocalBackend {
         let rel = clean_path(path)?;
         let dest = self.root.join(&rel);
         fs::read(&dest).map_err(|e| {
-            if e.kind() == std::io::ErrorKind::NotFound {
-                StorageError::NotFound(rel)
-            } else {
-                StorageError::Io(format!("{}: {e}", dest.display()))
-            }
+            if e.kind() == std::io::ErrorKind::NotFound { StorageError::NotFound(rel) } else { StorageError::Io(format!("{}: {e}", dest.display())) }
         })
     }
 
@@ -203,11 +195,7 @@ impl StorageBackend for LocalBackend {
     fn list(&self, prefix: &str) -> Result<Vec<Entry>, StorageError> {
         let dir = if prefix.is_empty() { self.root.clone() } else { self.root.join(clean_path(prefix)?) };
         let rd = fs::read_dir(&dir).map_err(|e| {
-            if e.kind() == std::io::ErrorKind::NotFound {
-                StorageError::NotFound(prefix.into())
-            } else {
-                StorageError::Io(format!("{}: {e}", dir.display()))
-            }
+            if e.kind() == std::io::ErrorKind::NotFound { StorageError::NotFound(prefix.into()) } else { StorageError::Io(format!("{}: {e}", dir.display())) }
         })?;
         let mut out = Vec::new();
         for ent in rd {
@@ -371,7 +359,8 @@ mod tests {
     fn no_half_file_visible() {
         let (_tmp, b) = backend();
         b.write("a/b/c.txt", b"hello", &WriteOptions { atomic: true, ..Default::default() }).unwrap();
-        let leftovers: Vec<_> = fs::read_dir(b.root()).unwrap().flatten().filter(|e| e.file_name().to_string_lossy().starts_with(".photocraft-save-")).collect();
+        let leftovers: Vec<_> =
+            fs::read_dir(b.root()).unwrap().flatten().filter(|e| e.file_name().to_string_lossy().starts_with(".photocraft-save-")).collect();
         assert!(leftovers.is_empty());
         assert_eq!(b.list("a/b").unwrap().len(), 1);
     }

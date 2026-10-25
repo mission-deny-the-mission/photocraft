@@ -123,15 +123,7 @@ pub(crate) fn batch(a: &BatchArgs, out: &mut dyn Write, err: &mut dyn Write) -> 
 
 /// `batch` with storage flags: `--in` and `--out` are storage folders. Each image is downloaded,
 /// processed and uploaded in turn; `--actions` stays a local file.
-fn batch_stored(
-    a: &BatchArgs,
-    stage: &Staging,
-    actions: &Steps,
-    set: &[Action],
-    opts: &ExportOptions,
-    out: &mut dyn Write,
-    err: &mut dyn Write,
-) -> Result {
+fn batch_stored(a: &BatchArgs, stage: &Staging, actions: &Steps, set: &[Action], opts: &ExportOptions, out: &mut dyn Write, err: &mut dyn Write) -> Result {
     let (in_prefix, out_prefix) = (key(&a.in_dir)?.trim_end_matches('/'), key(&a.out)?.trim_end_matches('/'));
     if !a.in_place && in_prefix == out_prefix {
         return Err(CliError::OutIsIn(a.out.clone()));

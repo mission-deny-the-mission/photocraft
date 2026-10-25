@@ -101,8 +101,7 @@ mod tests {
 
     #[test]
     fn plan_completes_only_uncommitted() {
-        let entries =
-            vec![entry("a", "a.1", JournalState::Pending), entry("a", "a.1", JournalState::Committed), entry("b", "b.1", JournalState::Pending)];
+        let entries = vec![entry("a", "a.1", JournalState::Pending), entry("a", "a.1", JournalState::Committed), entry("b", "b.1", JournalState::Pending)];
         let plan = RecoveryPlan::plan(&entries);
         assert_eq!(plan.complete.len(), 1);
         assert_eq!(plan.complete[0].path, "b");

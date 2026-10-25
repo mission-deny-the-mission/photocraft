@@ -46,7 +46,21 @@ fn the_example_writes_the_files_the_packages_install() {
     written.sort();
     let completions = ["photocraft-cli.bash", "_photocraft-cli", "photocraft-cli.fish", "photocraft-cli.elv", "_photocraft-cli.ps1"];
     let subcommands = [
-        "convert", "info", "run", "batch", "droplet", "commands", "mcp", "serve", "store-write", "store-read", "store-stat", "store-list", "store-remove", "store-probe", "store-recover",
+        "convert",
+        "info",
+        "run",
+        "batch",
+        "droplet",
+        "commands",
+        "mcp",
+        "serve",
+        "store-write",
+        "store-read",
+        "store-stat",
+        "store-list",
+        "store-remove",
+        "store-probe",
+        "store-recover",
     ];
     let mut expected: Vec<String> = completions.map(String::from).into();
     expected.push("photocraft-cli.1".into());

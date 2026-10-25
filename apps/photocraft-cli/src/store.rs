@@ -27,9 +27,7 @@ pub(crate) fn open_backend(cmd: &str, a: &StoreArgs) -> Result<Box<dyn StorageBa
             if a.store_url.is_some() {
                 return Err(store_err(format!("{cmd}: --store-url is for --store webdav, not local")));
             }
-            photocraft_storage::local::LocalBackend::open(root)
-                .map(|b| Box::new(b) as Box<dyn StorageBackend>)
-                .map_err(|e| store_err(format!("{cmd}: {e}")))
+            photocraft_storage::local::LocalBackend::open(root).map(|b| Box::new(b) as Box<dyn StorageBackend>).map_err(|e| store_err(format!("{cmd}: {e}")))
         }
         _ => {
             let url = a.store_url.as_deref().ok_or_else(|| store_err(format!("{cmd}: --store webdav needs --store-url URL")))?;
@@ -41,9 +39,7 @@ pub(crate) fn open_backend(cmd: &str, a: &StoreArgs) -> Result<Box<dyn StorageBa
                 (Some(t), None, None) => photocraft_storage::webdav::WebDavBackend::with_bearer(url, &t),
                 (None, user, password) => photocraft_storage::webdav::WebDavBackend::new(url, user, password),
                 _ => {
-                    return Err(store_err(format!(
-                        "{cmd}: --store-token cannot be combined with --store-user/--store-password (pick one auth scheme)"
-                    )));
+                    return Err(store_err(format!("{cmd}: --store-token cannot be combined with --store-user/--store-password (pick one auth scheme)")));
                 }
             };
             backend.map(|b| Box::new(b) as Box<dyn StorageBackend>).map_err(|e| store_err(format!("{cmd}: {e}")))
@@ -150,11 +146,7 @@ pub(crate) fn read(a: &StoreReadArgs, err: &mut dyn Write) -> Result {
 pub(crate) fn stat(a: &StorePathArgs, out: &mut dyn Write) -> Result {
     let backend = open_backend("store-stat", &a.store)?;
     let meta = backend.stat(&a.path).map_err(|e| store_err(format!("{}: {e}", a.path)))?;
-    print_json(
-        out,
-        &json!({"path": a.path, "size": meta.size, "etag": meta.etag, "modified": meta.modified, "isDir": meta.is_dir}),
-        JsonStyle::Pretty,
-    )
+    print_json(out, &json!({"path": a.path, "size": meta.size, "etag": meta.etag, "modified": meta.modified, "isDir": meta.is_dir}), JsonStyle::Pretty)
 }
 
 pub(crate) fn list(a: &StoreListArgs, out: &mut dyn Write) -> Result {
@@ -285,8 +277,7 @@ mod store_cli_tests {
 
         let Invoke { code, stderr, .. } = invoke(&["store-write", "f.psd", &v2, "--store", "local", "--store-root", &root, "--etag", "stale"]);
         assert_eq!(code, 1, "{stderr}");
-        let Invoke { code, stderr, .. } =
-            invoke(&["store-write", "f.psd", &v2, "--store", "local", "--store-root", &root, "--etag", &tag, "--atomic"]);
+        let Invoke { code, stderr, .. } = invoke(&["store-write", "f.psd", &v2, "--store", "local", "--store-root", &root, "--etag", &tag, "--atomic"]);
         assert_eq!(code, 0, "{stderr}");
         let Invoke { code, stdout, .. } = invoke(&["store-list", "--store", "local", "--store-root", &root]);
         assert_eq!(code, 0);
@@ -381,8 +372,7 @@ mod store_cli_tests {
         assert!(stderr.contains("pick one auth scheme"), "{stderr}");
 
         // Flags of the other backend are refused without connecting.
-        let Invoke { code, stderr, .. } =
-            invoke(&["store-probe", "--store", "local", "--store-root", &root, "--store-url", "http://127.0.0.1:9/x/"]);
+        let Invoke { code, stderr, .. } = invoke(&["store-probe", "--store", "local", "--store-root", &root, "--store-url", "http://127.0.0.1:9/x/"]);
         assert_eq!(code, 1, "{stderr}");
         assert!(stderr.contains("--store-url is for --store webdav"), "{stderr}");
 
