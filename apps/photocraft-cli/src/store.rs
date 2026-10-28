@@ -42,7 +42,11 @@ pub(crate) fn open_backend(cmd: &str, a: &StoreArgs) -> Result<Box<dyn StorageBa
                     return Err(store_err(format!("{cmd}: --store-token cannot be combined with --store-user/--store-password (pick one auth scheme)")));
                 }
             };
-            backend.map(|b| Box::new(b) as Box<dyn StorageBackend>).map_err(|e| store_err(format!("{cmd}: {e}")))
+            // Credentials go only to a loopback host over plain HTTP unless the network is trusted.
+            backend
+                .map(|b| if a.store_insecure_http { b.allow_cleartext_credentials() } else { b })
+                .map(|b| Box::new(b) as Box<dyn StorageBackend>)
+                .map_err(|e| store_err(format!("{cmd}: {e}")))
         }
     }
 }

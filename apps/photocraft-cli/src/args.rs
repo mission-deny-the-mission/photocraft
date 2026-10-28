@@ -72,6 +72,10 @@ pub(crate) struct StoreArgs {
     /// WebDAV Bearer token, instead of Basic auth; $CRAFT_DAV_TOKEN is read when this is not given
     #[arg(long, value_name = "TOKEN")]
     pub(crate) store_token: Option<String>,
+    /// Send WebDAV credentials over plain http to a host that is not loopback (a trusted LAN or
+    /// VPN only: anyone on the path can read them)
+    #[arg(long)]
+    pub(crate) store_insecure_http: bool,
 }
 
 impl StoreArgs {
@@ -83,6 +87,7 @@ impl StoreArgs {
             || self.store_user.is_some()
             || self.store_password.is_some()
             || self.store_token.is_some()
+            || self.store_insecure_http
     }
 }
 
