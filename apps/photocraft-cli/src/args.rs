@@ -53,7 +53,8 @@ pub(crate) enum Command {
 #[derive(Args, Default)]
 #[command(next_help_heading = "Storage")]
 pub(crate) struct StoreArgs {
-    /// The backend: local (a local, NAS or synced folder, the default) or webdav
+    /// The backend: local (a local, NAS or synced folder) or webdav [default: webdav with
+    /// --store-url, else local]
     #[arg(long, value_name = "local|webdav", value_parser = ["local", "webdav"])]
     pub(crate) store: Option<String>,
     /// The folder of a local backend

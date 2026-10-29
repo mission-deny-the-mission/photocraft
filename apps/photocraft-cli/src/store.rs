@@ -21,7 +21,9 @@ fn store_err(e: impl std::fmt::Display) -> CliError {
 /// The backend the storage flags name. The token comes from `--store-token`, else
 /// `$CRAFT_DAV_TOKEN`, so it need not be on the command line; it never combines with Basic auth.
 pub(crate) fn open_backend(cmd: &str, a: &StoreArgs) -> Result<Box<dyn StorageBackend>> {
-    match a.store.as_deref().unwrap_or("local") {
+    // Without --store, a --store-url names a WebDAV collection; otherwise it's a local folder.
+    let default_kind = if a.store_url.is_some() { "webdav" } else { "local" };
+    match a.store.as_deref().unwrap_or(default_kind) {
         "local" => {
             let root = a.store_root.as_deref().ok_or_else(|| store_err(format!("{cmd}: --store local needs --store-root DIR")))?;
             if a.store_url.is_some() {
@@ -170,8 +172,9 @@ pub(crate) fn remove(a: &StorePathArgs, err: &mut dyn Write) -> Result {
 
 pub(crate) fn probe(a: &StoreOnlyArgs, out: &mut dyn Write) -> Result {
     let backend = open_backend("store-probe", &a.store)?;
-    let caps = backend.capabilities();
     let probe = backend.probe().map_err(store_err)?;
+    // What the server said, not what the backend assumed before asking.
+    let caps = &probe.capabilities;
     print_json(
         out,
         &json!({
@@ -368,6 +371,11 @@ mod store_cli_tests {
         let Invoke { code, stderr, .. } = invoke(&["store-probe", "--store", "webdav"]);
         assert_eq!(code, 1, "{stderr}");
         assert!(stderr.contains("--store-url"), "{stderr}");
+
+        // A --store-url alone picks WebDAV: it fails at the (absent) server, not for want of a root.
+        let Invoke { code, stderr, .. } = invoke(&["store-probe", "--store-url", "http://127.0.0.1:9/unused/"]);
+        assert_eq!(code, 1, "{stderr}");
+        assert!(!stderr.contains("--store-root"), "{stderr}");
 
         // Token plus Basic auth never reaches the network.
         let Invoke { code, stderr, .. } =
